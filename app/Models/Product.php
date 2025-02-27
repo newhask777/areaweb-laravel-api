@@ -34,8 +34,13 @@ class Product extends Model
     }
 
 
-    public function image(): HasMany
+    public function images(): HasMany
     {
-        return $this->hasMany(ProductImage::class);
+        return $this->hasMany(ProductImage::class)->select('path');
+    }
+
+    public function rating(): int
+    {
+        return $this->reviews()->count('rating');
     }
 }
