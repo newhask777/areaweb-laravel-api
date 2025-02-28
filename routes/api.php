@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProductResourceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -13,6 +14,8 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+//
+//Route::apiResource('products', ProductResourceController::class);
 
 Route::controller(\App\Http\Controllers\ProductController::class)->prefix('products')->group(function () {
     Route::get('', 'index')->name('products.index');
@@ -25,4 +28,8 @@ Route::controller(\App\Http\Controllers\ProductController::class)->prefix('produ
     Route::patch('{product}', 'update')->name('product.patch');
 
     Route::delete('{product}', 'destroy')->name('product.destroy');
+});
+
+Route::controller(\App\Http\Controllers\UserController::class)->group(function (){
+    Route::post('login', 'login')->name('login');
 });

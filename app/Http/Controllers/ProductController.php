@@ -10,19 +10,20 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductReview;
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+
 
 class ProductController extends Controller
 {
     public function __construct()
     {
         // TODO: убрать когда ьы будем работать с авторизацией
-        auth()->login(User::query()->inRandomOrder()->whereIsAdmin(true)->first());
-    }
+//        auth()->login(User::query()->inRandomOrder()->whereIsAdmin(true)->first());
 
+        $this->middleware('auth')->only([
+            'store', 'update', 'review', 'destroy'
+        ]);
+    }
 
 
     public function index()
@@ -79,6 +80,12 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request)
     {
+//        dd(auth()->user());
+
+        $token = $request->bearerToken('token');
+        $user = User::query()->whereApiToken($token)->first();
+
+//        dd($user);
 
         /**
          * @var Product $product
@@ -176,6 +183,7 @@ class ProductController extends Controller
         }
 
     }
+
 
     public function destroy(Product $product)
     {
