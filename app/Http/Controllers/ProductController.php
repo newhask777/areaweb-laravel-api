@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ProductStatus;
+use App\Http\Requests\Product\StoreProductRequest;
+use App\Http\Requests\Product\StoreReviewRequest;
+use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductReview;
@@ -26,17 +29,22 @@ class ProductController extends Controller
     {
         $products = Product::query()
             ->select([
-                'id', 'name', 'price'
+                'id', 'name', 'price', 'count'
             ])
 //            ->where('status', 'published')
             ->whereStatus(ProductStatus::Published)
             ->get();
 
+//        dd($products);
+
         return $products->map(fn(Product $product)=> [
-            'id' => $product->id,
+//            'id' => $product->id,
             'name' => $product->name,
+            'description' => $product->description,
             'price' => $product->price,
-            'rating' => $product->rating()
+            'count' => $product->count,
+            'rating' => $product->rating(),
+            'status' => $product->status(true)
         ]);
     }
 
@@ -69,7 +77,7 @@ class ProductController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(StoreProductRequest $request)
     {
 
         /**
@@ -99,7 +107,7 @@ class ProductController extends Controller
     }
 
 
-    public function review(Product $product, Request $request)
+    public function review(Product $product, StoreReviewRequest $request)
     {
 //        dd($request->all());
 
@@ -109,5 +117,70 @@ class ProductController extends Controller
             'rating' => $request->rating
         ]);
     }
+
+
+    public function update(Product $product, UpdateProductRequest $request)
+    {
+        if($request->method() === 'PUT')
+        {
+//            dd($request->all());
+            $product->update([
+//            'id' => $product->id,
+                'name' => $request->name,
+                'description' => $request->description,
+                'price' => $request->price,
+                'count' => $request->count,
+                'rating' => $request->rating,
+                'status' => $request->enum('status', ProductStatus::class )
+            ]);
+
+        }
+        else
+        {
+            $data = [];
+
+            if($request->has('name'))
+            {
+                $data['name'] = $request->name;
+            }
+
+            if($request->has('description'))
+            {
+                $data['description'] = $request->description;
+            }
+
+            if($request->has('price'))
+            {
+                $data['price'] = $request->price;
+            }
+
+            if($request->has('count'))
+            {
+                $data['count'] = $request->count;
+            }
+
+            if($request->has('rating'))
+            {
+                $data['rating'] = $request->rating;
+            }
+
+            if($request->has('status'))
+            {
+                $data['status'] = $request->status;
+            }
+
+//            dd($data);
+
+            $product->update($data);
+
+        }
+
+    }
+
+    public function destroy(Product $product)
+    {
+        $product->delete();
+    }
+
 
 }

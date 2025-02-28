@@ -43,4 +43,24 @@ class Product extends Model
     {
         return $this->reviews()->count('rating');
     }
+
+    public function set_rating($rating, $id)
+    {
+        $rt = ProductReview::query()->select('rating')->whereId($id);
+//            ->update(['rating' => $rating]);
+//       dd($rt);
+
+    }
+
+    public function status($status=false): ProductStatus
+    {
+        if($status === true){
+            return ProductStatus::Published;
+        }
+        else{
+            return ProductStatus::Draft;
+        }
+
+    }
+
 }
