@@ -105,7 +105,7 @@ class ProductService
     }
 
 
-    public function addReview(StoreReviewRequest $request): ProductReview
+    public function addReview(StoreReviewRequest $request): \Illuminate\Database\Eloquent\Model
     {
         return $this->product->reviews()->create([
             'user_id' => auth()->id(),

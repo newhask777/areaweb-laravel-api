@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\ProductStatus;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\StoreReviewRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
@@ -10,9 +9,9 @@ use App\Http\Resources\Product\MinifiedProductResource;
 use App\Http\Resources\Product\ProductResource;
 use App\Http\Resources\Product\ProductReviewResource;
 use App\Models\Product;
-use App\Models\User;
 use App\Services\Product\ProductService;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use App\Facades\Product as ProductFacade;
 
 
 class ProductController extends Controller
@@ -39,9 +38,11 @@ class ProductController extends Controller
     }
 
 
-    public function index(ProductService $service)
+    public function index()
     {
-        return MinifiedProductResource::collection($service->published());
+        return MinifiedProductResource::collection(
+            ProductFacade::published()
+        );
     }
 
 
@@ -51,25 +52,17 @@ class ProductController extends Controller
     }
 
 
-    public function store(StoreProductRequest $request, ProductService $service)
+    public function store(StoreProductRequest $request)
     {
         // dd(auth()->user()->tokens());
-        return new ProductResource($service->store($request));
+        return new ProductResource(ProductFacade::store($request));
     }
 
 
-    public function review(Product $product, StoreReviewRequest $request, ProductService $service)
-    {
-        // dd($request->all());
-        return new ProductReviewResource(
-            $service->setProduct($product)->addReview($request)
-        );
-    }
 
-
-    public function update(Product $product, UpdateProductRequest $request, ProductService $service)
+    public function update(Product $product, UpdateProductRequest $request)
     {
-        $product = $service->setProduct($product)->update($request);
+        $product = ProductFacade::setProduct($product)->update($request);
 
         return new ProductResource($product);
     }
@@ -79,6 +72,16 @@ class ProductController extends Controller
     {
         $product->delete();
         return responseOk();
+    }
+
+
+
+    public function review(Product $product, StoreReviewRequest $request)
+    {
+        // dd($request->all());
+        return new ProductReviewResource(
+            ProductFacade::setProduct($product)->addReview($request)
+        );
     }
 
 
