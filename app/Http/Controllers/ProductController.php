@@ -60,6 +60,7 @@ class ProductController extends Controller
 
 
 
+
     public function update(Product $product, UpdateProductRequest $request)
     {
         $product = ProductFacade::setProduct($product)->update($request);
