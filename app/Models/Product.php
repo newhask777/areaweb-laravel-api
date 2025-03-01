@@ -88,4 +88,11 @@ class Product extends Model
 
     }
 
+
+    public function isDraft(): bool
+    {
+        return $this->status === ProductStatus::Draft;
+    }
+
+
 }

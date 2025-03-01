@@ -16,7 +16,7 @@ class StoreProductRequest extends ApiRequest
             'price' => ['required', 'numeric', 'min:1', 'max:50000'],
             'count' => ['required', 'integer', 'min:0', 'max:5000'],
             'status' => ['required', new Enum(ProductStatus::class)],
-            'images.*' => ['image']
+            'images.*' => ['nullable']
         ];
     }
 }

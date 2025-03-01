@@ -23,6 +23,18 @@ class ProductController extends Controller
         $this->middleware('auth:sanctum')->only([
             'store', 'update', 'review', 'destroy'
         ]);
+
+        $this->middleware('admin')->only(
+            [
+                'store', 'update', 'destroy'
+            ]
+        );
+
+        $this->middleware('product.draft')->only(
+            [
+                'show'
+            ]
+        );
     }
 
 
@@ -53,12 +65,7 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         // TODO: переневти в middleware
-        if($product->status == ProductStatus::Draft)
-        {
-           return response()->json([
-              'message' => 'Product not fouund',
-           ], 404);
-        }
+
 
         return [
             'id' => $product->id,
@@ -80,7 +87,7 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request)
     {
-        dd(auth()->user()->tokens());
+//        dd(auth()->user()->tokens());
 
         $token = $request->bearerToken('token');
         $user = User::query()->whereApiToken($token)->first();
