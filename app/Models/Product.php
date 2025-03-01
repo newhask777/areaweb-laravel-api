@@ -89,6 +89,13 @@ class Product extends Model
     }
 
 
+    public function imagesList(): array
+    {
+
+        return $this->images->map(fn(ProductImage $image) => $image->path)->toArray();
+
+    }
+
     public function isDraft(): bool
     {
         return $this->status === ProductStatus::Draft;

@@ -6,9 +6,9 @@ use App\Enums\ProductStatus;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\StoreReviewRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
+use App\Http\Resources\Product\MinifiedProductResource;
+use App\Http\Resources\Product\ProductResource;
 use App\Models\Product;
-use App\Models\ProductImage;
-use App\Models\ProductReview;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 
@@ -44,44 +44,16 @@ class ProductController extends Controller
             ->select([
                 'id', 'name', 'price', 'count'
             ])
-//            ->where('status', 'published')
             ->whereStatus(ProductStatus::Published)
             ->get();
-
-//        dd($products);
-
-        return $products->map(fn(Product $product)=> [
-//            'id' => $product->id,
-            'name' => $product->name,
-            'description' => $product->description,
-            'price' => $product->price,
-            'count' => $product->count,
-            'rating' => $product->rating(),
-            'status' => $product->status(true)
-        ]);
+;
+        return MinifiedProductResource::collection($products);
     }
 
 
     public function show(Product $product)
     {
-        // TODO: переневти в middleware
-
-
-        return [
-            'id' => $product->id,
-            'name' => $product->name,
-            'description' => $product->description,
-            'rating' => $product->rating(),
-            'images' => $product->images->map(fn(ProductImage $image) => $image->path),
-            'price' => $product->price,
-            'count' => $product->count,
-            'reviews' => $product->reviews->map(fn(ProductReview $review) => [
-                'id' => $review->id,
-                'userName' => $review->user->name,
-                'text' => $review->text,
-                'rating' => $review->rating,
-            ]),
-        ];
+        return new ProductResource($product);
     }
 
 
@@ -91,8 +63,6 @@ class ProductController extends Controller
 
         $token = $request->bearerToken('token');
         $user = User::query()->whereApiToken($token)->first();
-
-//        dd($user);
 
         /**
          * @var Product $product
