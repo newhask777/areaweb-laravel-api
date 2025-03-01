@@ -12,7 +12,7 @@ use Laravel\Sanctum\HasApiTokens;
 //use app\Http\Requests\User\LoginRequest;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $name
@@ -61,7 +61,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'api_token',
     ];
 
     /**
@@ -72,7 +71,6 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
-        'api_token',
     ];
 
     /**

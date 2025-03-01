@@ -20,7 +20,7 @@ class ProductController extends Controller
         // TODO: убрать когда ьы будем работать с авторизацией
 //        auth()->login(User::query()->inRandomOrder()->whereIsAdmin(true)->first());
 
-        $this->middleware('auth')->only([
+        $this->middleware('auth:sanctum')->only([
             'store', 'update', 'review', 'destroy'
         ]);
     }
@@ -80,7 +80,7 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request)
     {
-//        dd(auth()->user());
+        dd(auth()->user()->tokens());
 
         $token = $request->bearerToken('token');
         $user = User::query()->whereApiToken($token)->first();
